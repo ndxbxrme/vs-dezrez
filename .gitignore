@@ -1,0 +1,8 @@
+node_modules
+data
+databk
+databk1
+logs
+env.bat
+env.sh
+package-lock.json
