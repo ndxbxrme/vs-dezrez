@@ -125,7 +125,7 @@ module.exports = (ndx) => {
     ndx.app.post('/webhook', async (req, res, next) => {
         if (req.body) {
             webhookCount++;
-            //ndx.database.insert('postdata', req.body);
+            ndx.database.insert('postdata', req.body);
             const event = req.body;
             let changeType = ['offer', 'viewing', 'event'].reduce((res, type) => res || (JSON.stringify(event).toLowerCase().includes(type) ? type : null), null);
             if (!changeType) changeType = 'property';
