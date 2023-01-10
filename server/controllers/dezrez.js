@@ -79,7 +79,11 @@ module.exports = (ndx) => {
         res.json({});
     });
     ndx.app.post('/search', async (req, res, next) => {
-        const properties = await ndx.database.select('property');
+        console.log('search called');
+        const search = await ndx.database.selectOne('searches', {_id:1});
+        if(!search) return res.end(200);
+        const properties = search.properties;
+        console.log(properties.length);
         if(properties && properties.length) {
             res.json({
                 Collection: properties,
