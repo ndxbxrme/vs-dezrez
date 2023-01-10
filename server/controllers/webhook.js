@@ -2,6 +2,7 @@ const superagent = require('superagent');
 module.exports = (ndx) => {
     const changeList = [];
     let bootingUp = true;
+    let webhookCount = 0;
     const pollForChanges = async () => {
         if (bootingUp && !changeList.length) {
             bootingUp = false;
@@ -96,9 +97,6 @@ module.exports = (ndx) => {
     }
     ndx.database.on('ready', async () => {
         bootingUp = true;
-<<<<<<< HEAD
-        const properties = await ndx.dezrez.fetchProperties(1);
-=======
         await updateSearch();
         /*
         */
@@ -106,7 +104,6 @@ module.exports = (ndx) => {
     ndx.app.post('/refresh', async (req, res, next) => {
         const properties = await updateSearch();
         bootingUp = true;
->>>>>>> 94ad331fce0b5d31fa08ff2406a24e2cfdd06ab8
         properties.forEach((property, index) => {
             //if(index > 0) return;
             changeList.push({ id: property.RoleId, type: 'property' });
@@ -114,23 +111,18 @@ module.exports = (ndx) => {
             changeList.push({ id: property.RoleId, type: 'viewing' });
             changeList.push({ id: property.RoleId, type: 'event' });
         });
-<<<<<<< HEAD
-        pollForChanges()
-    });
-    ndx.app.post('/testwebhook', (req, res, next) => {
-        console.log('WEBHOOK CALLED');
-=======
->>>>>>> 94ad331fce0b5d31fa08ff2406a24e2cfdd06ab8
         res.end('ok');
     });
     ndx.app.get('/status', (req, res, next) => {
         res.json({
             bootingUp,
-            changeList
+            changeList,
+            webhookCount
         })
     })
     ndx.app.post('/webhook', async (req, res, next) => {
         if (req.body) {
+            webhookCount++;
             //ndx.database.insert('postdata', req.body);
             const event = req.body;
             let changeType = ['offer', 'viewing', 'event'].reduce((res, type) => res || (JSON.stringify(event).toLowerCase().includes(type) ? type : null), null);
