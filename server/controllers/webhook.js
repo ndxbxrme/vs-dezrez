@@ -90,14 +90,14 @@ module.exports = (ndx) => {
     }
     ndx.database.on('ready', async () => {
         bootingUp = true;
-        /*const properties = await ndx.dezrez.fetchProperties(1);
+        const properties = await ndx.dezrez.fetchProperties(1);
         properties.forEach((property, index) => {
             if(index > 0) return;
             changeList.push({ id: property.RoleId, type: 'property' });
             changeList.push({ id: property.RoleId, type: 'offer' });
             changeList.push({ id: property.RoleId, type: 'viewing' });
             changeList.push({ id: property.RoleId, type: 'event' });
-        });*/
+        });
         pollForChanges()
     });
     ndx.app.post('/testwebhook', (req, res, next) => {
