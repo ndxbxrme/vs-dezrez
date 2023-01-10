@@ -5,6 +5,7 @@ module.exports = (ndx) => {
     const pollForChanges = async () => {
         if (bootingUp && !changeList.length) {
             bootingUp = false;
+            console.log('posting to', process.env.VS_PROPERTY_WEBHOOK);
             superagent.post(process.env.VS_PROPERTY_WEBHOOK).end();
         }
         if (changeList.length) {
@@ -20,7 +21,7 @@ module.exports = (ndx) => {
                         //tenantrole
                         if (role && role.TenantRoleId) {
                             const tenantrole = await ndx.dezrez.get('role/{id}', null, { id: role.TenantRoleId });
-                            purchasingrole._id = +role.TenantRoleId;
+                            tenantrole._id = +role.TenantRoleId;
                             ndx.database.upsert('role', tenantrole);
                         }
                         //purchasingrole
@@ -86,22 +87,29 @@ module.exports = (ndx) => {
                 console.error('error', e);
             }
         }
-        setTimeout(pollForChanges, bootingUp ? 1000 : 30000);
+        setTimeout(pollForChanges, bootingUp ? 3000 : 30000);
+    }
+    const updateSearch = async () => {
+        const properties = await ndx.dezrez.fetchProperties(1);
+        await ndx.database.upsert('searches', {_id:1,properties:properties});
+        return properties;
     }
     ndx.database.on('ready', async () => {
         bootingUp = true;
-        /*const properties = await ndx.dezrez.fetchProperties(1);
+        await updateSearch();
+        /*
+        */
+    });
+    ndx.app.post('/refresh', async (req, res, next) => {
+        const properties = await updateSearch();
+        bootingUp = true;
         properties.forEach((property, index) => {
-            if(index > 0) return;
+            //if(index > 0) return;
             changeList.push({ id: property.RoleId, type: 'property' });
             changeList.push({ id: property.RoleId, type: 'offer' });
             changeList.push({ id: property.RoleId, type: 'viewing' });
             changeList.push({ id: property.RoleId, type: 'event' });
-        });*/
-        pollForChanges()
-    });
-    ndx.app.post('/testwebhook', (req, res, next) => {
-        console.log('WEBHOOK CALLED');
+        });
         res.end('ok');
     });
     ndx.app.get('/status', (req, res, next) => {
@@ -130,7 +138,7 @@ module.exports = (ndx) => {
                     if (change.PropertyName === 'RoleStatus') {
                         roleStatusEvents.push(event);
                         if (['InstructionToLet', 'InstructionToSell', 'OfferAccepted'].includes(change.PropertyName)) {
-
+                            await updateSearch();
                         }
                         else {
                             //delisted
@@ -152,6 +160,7 @@ module.exports = (ndx) => {
                                 }
                                 ndx.database.delete('role', { _id: +role._id });
                             }
+                            await updateSearch();
                             return;
                         }
                     }
