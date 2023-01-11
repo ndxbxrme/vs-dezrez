@@ -127,6 +127,9 @@ module.exports = (ndx) => {
             webhookCount++;
             ndx.database.insert('postdata', req.body);
             const event = req.body;
+            if(event && event.EventType && event.EventType==='GenericEvent') {
+                return res.end('ok');
+            }
             let changeType = ['offer', 'viewing', 'event'].reduce((res, type) => res || (JSON.stringify(event).toLowerCase().includes(type) ? type : null), null);
             if (!changeType) changeType = 'property';
             if (changeType === 'event' && event.PropertyRoleId === event.RootEntityId && event.ChangeType === 'Updated') {
