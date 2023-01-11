@@ -4,6 +4,7 @@ module.exports = (ndx) => {
     let bootingUp = true;
     let webhookCount = 0;
     let pollCount = 0;
+    let startDate = new Date();
     const pollForChanges = async () => {
         pollCount++;
         if (bootingUp && !changeList.length) {
@@ -119,7 +120,8 @@ module.exports = (ndx) => {
             bootingUp,
             changeList,
             webhookCount,
-            pollCount
+            pollCount,
+            startDate
         })
     })
     ndx.app.post('/webhook', async (req, res, next) => {
