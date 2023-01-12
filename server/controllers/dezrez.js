@@ -95,7 +95,7 @@ module.exports = (ndx) => {
     ndx.app.get('/simplepropertyrole/:id', async (req, res, next) => {
         const search = await ndx.database.selectOne('searches', {_id:1});
         if(!search) return res.end(200);
-        const property = search.find(property => +property.RoleId===+req.params.id);
+        const property = search.properties.find(property => +property.RoleId===+req.params.id);
         if(!property) return res.end(200);
         return res.json(property);
     });
