@@ -127,7 +127,7 @@ module.exports = (ndx) => {
     ndx.app.post('/webhook', async (req, res, next) => {
         if (req.body) {
             webhookCount++;
-            ndx.database.insert('postdata', req.body);
+            //ndx.database.insert('postdata', req.body);
             const event = req.body;
             if(event && event.EventType && event.EventType==='GenericEvent') {
                 return res.end('ok');
