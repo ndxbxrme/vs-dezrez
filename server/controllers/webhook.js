@@ -130,6 +130,9 @@ module.exports = (ndx) => {
             if (changeType === 'event' && event.PropertyRoleId === event.RootEntityId && event.ChangeType === 'Updated') {
                 changeType = 'property';
             };
+            if(!event.PropertyRoleId) {
+                return res.end('ok');
+            }
             const change = {
                 id: event.PropertyRoleId || event.RootEntityId,
                 type: changeType
