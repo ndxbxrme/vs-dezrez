@@ -3,7 +3,10 @@ module.exports = (ndx) => {
     const changeList = [];
     let bootingUp = true;
     let webhookCount = 0;
+    let pollCount = 0;
+    let startDate = new Date();
     const pollForChanges = async () => {
+        pollCount++;
         if (bootingUp && !changeList.length) {
             bootingUp = false;
             console.log('posting to', process.env.VS_PROPERTY_WEBHOOK);
@@ -98,8 +101,7 @@ module.exports = (ndx) => {
     ndx.database.on('ready', async () => {
         bootingUp = true;
         await updateSearch();
-        /*
-        */
+        pollForChanges();
     });
     ndx.app.post('/refresh', async (req, res, next) => {
         const properties = await updateSearch();
@@ -117,14 +119,19 @@ module.exports = (ndx) => {
         res.json({
             bootingUp,
             changeList,
-            webhookCount
+            webhookCount,
+            pollCount,
+            startDate
         })
     })
     ndx.app.post('/webhook', async (req, res, next) => {
         if (req.body) {
             webhookCount++;
-            //ndx.database.insert('postdata', req.body);
+            ndx.database.insert('postdata', req.body);
             const event = req.body;
+            if(event && event.EventType && event.EventType==='GenericEvent') {
+                return res.end('ok');
+            }
             let changeType = ['offer', 'viewing', 'event'].reduce((res, type) => res || (JSON.stringify(event).toLowerCase().includes(type) ? type : null), null);
             if (!changeType) changeType = 'property';
             if (changeType === 'event' && event.PropertyRoleId === event.RootEntityId && event.ChangeType === 'Updated') {
