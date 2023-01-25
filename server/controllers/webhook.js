@@ -95,6 +95,7 @@ module.exports = (ndx) => {
     }
     const updateSearch = async () => {
         const properties = await ndx.dezrez.fetchProperties(1);
+        ndx.database.delete('searches', {_id:1});
         await ndx.database.upsert('searches', {_id:1,properties:properties});
         return properties;
     }
@@ -113,6 +114,21 @@ module.exports = (ndx) => {
             changeList.push({ id: property.RoleId, type: 'viewing' });
             changeList.push({ id: property.RoleId, type: 'event' });
         });
+        res.end('ok');
+    });
+    ndx.app.post('/refresh/:id', async (req, res, next) => {
+        if(req.params.id && +req.params.id > 0) {
+            changeList.push({ id: +req.params.id, type: 'property' });
+            changeList.push({ id: +req.params.id, type: 'offer' });
+            changeList.push({ id: +req.params.id, type: 'viewing' });
+            changeList.push({ id: +req.params.id, type: 'event' });
+            return res.end('ok');
+        }
+        res.end('bad id');
+    })
+    ndx.app.post('/refresh-searches', async (req, res, next) => {
+        await updateSearch();
+        superagent.post(process.env.VS_PROPERTY_WEBHOOK).end();
         res.end('ok');
     });
     ndx.app.get('/status', (req, res, next) => {
