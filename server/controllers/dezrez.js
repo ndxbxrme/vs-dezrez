@@ -78,7 +78,7 @@ module.exports = (ndx) => {
         }
         res.json({});
     });
-    ndx.app.post('/search', async (req, res, next) => {
+    ndx.app.post('/simplepropertyrole/search', async (req, res, next) => {
         console.log('search called');
         const search = await ndx.database.selectOne('searches', {_id:1});
         if(!search) return res.end(200);
