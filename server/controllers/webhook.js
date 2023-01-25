@@ -95,7 +95,6 @@ module.exports = (ndx) => {
     }
     const updateSearch = async () => {
         const properties = await ndx.dezrez.fetchProperties(1);
-        ndx.database.delete('searches', {_id:1});
         await ndx.database.upsert('searches', {_id:1,properties:properties});
         return properties;
     }
