@@ -14,7 +14,9 @@ module.exports = (ndx) => {
     removed: 0,
     webhookCalls: 0,
     errors: 0,
-    errorMsg: ''
+    errorMsg: '',
+    propertyErrors: [],
+    pollingErrors: [],
   }
   let startDate = new Date();
   const lastCalls = new Map();
@@ -102,7 +104,8 @@ module.exports = (ndx) => {
         if(!prevChange) {
           changeList.push({
             id: propertyRoleId,
-            type: eventType
+            type: eventType,
+            eventName
           })
         }
       }
@@ -110,6 +113,12 @@ module.exports = (ndx) => {
       console.log(e);
       processed.errors++;
       processed.errorMsg = e;
+      processed.propertyErrors.push({
+        propertyId,
+        propertyRoleId,
+        eventId,
+        eventName
+      });
     }
   };
   const pollForChanges = async () => {
@@ -199,6 +208,7 @@ module.exports = (ndx) => {
           console.error('error', e);
           processed.errors++;
           processed.errorMsg = e;
+          processed.pollingErrors.push(change);
         }
     }
     setTimeout(pollForChanges, bootingUp ? 3000 : 20000);
