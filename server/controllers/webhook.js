@@ -26,7 +26,7 @@ module.exports = (ndx) => {
   }
   const updateSearch = async () => {
       const properties = await ndx.dezrez.fetchProperties(1);
-      const searches = await ndx.database.selectOne('searched', {_id:1});
+      const searches = await ndx.database.selectOne('searches', {_id:1});
       await ndx.database.upsert('searches', {_id:1,properties:properties});
       if(!bootingUp) {
         superagent.post(process.env.VS_PROPERTY_WEBHOOK).end();
