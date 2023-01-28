@@ -87,7 +87,7 @@ module.exports = (ndx) => {
   const updateProperty = async (propertyId, propertyRoleId, eventId, eventName) => {
     try {
       if(!propertyRoleId) {
-        if(eventId) {
+        if(eventId && eventName) {
           const res = await ndx.dezrez.get('event/' + eventId, null, "");
           if(res && res.propertyId) {
             propertyId = res.Property ? res.Property.Id : res.PropertyId;
