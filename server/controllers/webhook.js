@@ -14,6 +14,7 @@ module.exports = (ndx) => {
     removed: 0,
     webhookCalls: 0,
     errors: 0,
+    commissions: 0,
     errorMsg: '',
     propertyErrors: [],
     pollingErrors: [],
@@ -137,8 +138,8 @@ module.exports = (ndx) => {
                 case 'property':
                     //get role
                     const role = await ndx.dezrez.get('role/{id}', null, { id: change.id });
+                    let property = null;
                     role._id = +change.id;
-                    ndx.database.upsert('role', role);
                     //tenantrole
                     if (role && role.TenantRoleId) {
                         const tenantrole = await ndx.dezrez.get('role/{id}', null, { id: role.TenantRoleId });
@@ -171,6 +172,21 @@ module.exports = (ndx) => {
                         }
                         ndx.database.upsert('propertyowners', propertyowners);
                     }
+                    if(!role.Commission) {
+                      if(property && property.Fees && property.Fees.length) {
+                        processed.commissions++;
+                        const fee = property.Fees[0];
+                        if(fee.FeeValueType && fee.FeeValueType.SystemName === 'Absolute') {
+                          role.Commission = property.Fees[0].DefaultValue;
+                        }
+                        else {
+                          if(role.AcceptedOffer) {
+                            role.Commission = role.AcceptedOffer.Value * (property.Fees[0].DefaultValue / 100);
+                          }
+                        }
+                      }
+                    }
+                    ndx.database.upsert('role', role);
                     //inform vs-property
                     processed.properties++;
                     break;
