@@ -18,6 +18,7 @@ module.exports = (ndx) => {
     errorMsg: '',
     propertyErrors: [],
     pollingErrors: [],
+    commissionProp: null
   }
   let startDate = new Date();
   const lastCalls = new Map();
@@ -173,6 +174,7 @@ module.exports = (ndx) => {
                         ndx.database.upsert('propertyowners', propertyowners);
                     }
                     if(!role.Commission) {
+                      processed.commissionProp = property;
                       if(property && property.Fees && property.Fees.length) {
                         processed.commissions++;
                         const fee = property.Fees[0];
