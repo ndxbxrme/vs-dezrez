@@ -14,11 +14,9 @@ module.exports = (ndx) => {
     removed: 0,
     webhookCalls: 0,
     errors: 0,
-    commissions: 0,
     errorMsg: '',
     propertyErrors: [],
     pollingErrors: [],
-    commissionProp: null
   }
   let startDate = new Date();
   const lastCalls = new Map();
@@ -139,8 +137,8 @@ module.exports = (ndx) => {
                 case 'property':
                     //get role
                     const role = await ndx.dezrez.get('role/{id}', null, { id: change.id });
-                    let property = null;
                     role._id = +change.id;
+                    ndx.database.upsert('role', role);
                     //tenantrole
                     if (role && role.TenantRoleId) {
                         const tenantrole = await ndx.dezrez.get('role/{id}', null, { id: role.TenantRoleId });
@@ -161,7 +159,7 @@ module.exports = (ndx) => {
                     }
                     //property/:id
                     if (role && role.PropertyId) {
-                        property = await ndx.dezrez.get('property/{id}', null, { id: role.PropertyId });
+                        const property = await ndx.dezrez.get('property/{id}', null, { id: role.PropertyId });
                         property._id = +role.PropertyId;
                         ndx.database.upsert('property', property);
                     }
@@ -173,22 +171,6 @@ module.exports = (ndx) => {
                         }
                         ndx.database.upsert('propertyowners', propertyowners);
                     }
-                    if(!role.Commission) {
-                      processed.commissionProp = property;
-                      if(property && property.Fees && property.Fees.length) {
-                        processed.commissions++;
-                        const fee = property.Fees[0];
-                        if(fee.FeeValueType && fee.FeeValueType.SystemName === 'Absolute') {
-                          role.Commission = property.Fees[0].DefaultValue;
-                        }
-                        else {
-                          if(role.AcceptedOffer) {
-                            role.Commission = role.AcceptedOffer.Value * (property.Fees[0].DefaultValue / 100);
-                          }
-                        }
-                      }
-                    }
-                    ndx.database.upsert('role', role);
                     //inform vs-property
                     processed.properties++;
                     break;
