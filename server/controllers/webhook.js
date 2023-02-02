@@ -160,7 +160,7 @@ module.exports = (ndx) => {
                     }
                     //property/:id
                     if (role && role.PropertyId) {
-                        const property = await ndx.dezrez.get('property/{id}', null, { id: role.PropertyId });
+                        property = await ndx.dezrez.get('property/{id}', null, { id: role.PropertyId });
                         property._id = +role.PropertyId;
                         ndx.database.upsert('property', property);
                     }
