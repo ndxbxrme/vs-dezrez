@@ -2,7 +2,7 @@ module.exports = (ndx) => {
     ndx.app.post('/token', (req, res, next) => {
         res.json({accessToken:1234});
     });
-    ['offers', 'events', 'viewings', 'viewingsbasic'].forEach(type => {
+    ['offers', 'viewings', 'viewingsbasic'].forEach(type => {
         ndx.app.get('/role/:id/' + type, async (req, res, next) => {
             if (req.params.id) {
                 let offers = await ndx.database.selectOne(type, { _id: +req.params.id });
@@ -21,6 +21,15 @@ module.exports = (ndx) => {
             }
             res.json([]);
         });
+    });
+    ndx.app.get('/role/:id/events', async (req, res, next) => {
+        if(req.params.id) {
+            const events = await ndx.dezrez.get('role/{id}/events', { pageSize: 2000 }, req.params.id);
+            if(events && events.Collection) {
+                return res.json(events.Collection);
+            }
+            return res.json([]);
+        }
     });
     ndx.app.get('/role/:id', async (req, res, next) => {
         if (req.params.id) {
@@ -100,7 +109,8 @@ module.exports = (ndx) => {
         return res.json(property);
     });
     ndx.app.get('/stats/rightmove/:id', async (req, res, next) => {
-        res.json(await ndx.dezrez.get('stats/rightmove/{id}', null, req.params.id));
+        const rightmove = await ndx.dezrez.get('stats/rightmove/{id}', null, req.params.id);
+        res.json(rightmove);
     });
     ndx.app.get('/people/findbyemail', async (req, res, next) => {
         const email = req.query.email;

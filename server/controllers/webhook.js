@@ -43,7 +43,7 @@ module.exports = (ndx) => {
           updateProperty(null, RoleId, null, 'property');
           updateProperty(null, RoleId, null, 'offer');
           updateProperty(null, RoleId, null, 'viewing');
-          updateProperty(null, RoleId, null, 'event');
+          //updateProperty(null, RoleId, null, 'event');
           processed.added++;
         });
         removedRoleIds.forEach(async RoleId => {
@@ -100,6 +100,7 @@ module.exports = (ndx) => {
       }
       if(propertyRoleId) {
         const eventType = getEventType(eventName);
+        if(eventType==='event') return;
         const prevChange = changeList.find(change => change.id===propertyRoleId && change.type === eventType);
         if(!prevChange) {
           changeList.push({
@@ -194,16 +195,16 @@ module.exports = (ndx) => {
                     ndx.database.upsert('viewingsbasic', viewingsbasic);
                     processed.viewings++;
                     break;
-                case 'event':
+                /*case 'event':
                     const events = {
                         _id: +change.id,
                         body: await ndx.dezrez.get('role/{id}/events', { pageSize: 2000 }, { id: change.id })
                     };
                     ndx.database.upsert('events', events);
                     processed.events++;
-                    break;
+                    break;*/
             }
-            throttle(updateSearch, 5 * 60 * 1000, 'updateSearch');
+            throttle(updateSearch, .5 * 60 * 1000, 'updateSearch');
         } catch (e) {
           console.error('error', e);
           processed.errors++;
@@ -211,7 +212,7 @@ module.exports = (ndx) => {
           processed.pollingErrors.push(change);
         }
     }
-    setTimeout(pollForChanges, bootingUp ? 3000 : 20000);
+    setTimeout(pollForChanges, bootingUp ? 3000 : 3000);
   };
   ndx.database.on('ready', async () => {
       bootingUp = true;
@@ -225,7 +226,7 @@ module.exports = (ndx) => {
         updateProperty(null, property.RoleId, null, 'property');
         updateProperty(null, property.RoleId, null, 'offer');
         updateProperty(null, property.RoleId, null, 'viewing');
-        updateProperty(null, property.RoleId, null, 'event');
+        //updateProperty(null, property.RoleId, null, 'event');
       });
       res.end('ok');
   });
@@ -234,7 +235,7 @@ module.exports = (ndx) => {
         updateProperty(null, +req.params.id, null, 'property');
         updateProperty(null, +req.params.id, null, 'offer');
         updateProperty(null, +req.params.id, null, 'viewing');
-        updateProperty(null, +req.params.id, null, 'event');
+        //updateProperty(null, +req.params.id, null, 'event');
         return res.end('ok');
       }
       res.end('bad id');
