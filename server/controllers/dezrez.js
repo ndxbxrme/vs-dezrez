@@ -10,7 +10,7 @@ module.exports = (ndx) => {
                     return res.json(offers.body);
                 }
                 try {
-                    offers = await ndx.dezrez.get('role/{id}/' + type, null, req.params.id);
+                    offers = await ndx.dezrez.get('role/{id}/' + type, null, {id:req.params.id});
                     if (offers) {
                         ndx.database.upsert(type, {_id:+req.params.id, body:offers});
                         return res.json(offers);
@@ -24,7 +24,7 @@ module.exports = (ndx) => {
     });
     ndx.app.get('/role/:id/events', async (req, res, next) => {
         if(req.params.id) {
-            const events = await ndx.dezrez.get('role/{id}/events', { pageSize: 2000 }, req.params.id);
+            const events = await ndx.dezrez.get('role/{id}/events', { pageSize: 2000 }, {id: req.params.id});
             if(events && events.Collection) {
                 return res.json(events.Collection);
             }
@@ -38,7 +38,7 @@ module.exports = (ndx) => {
                 return res.json(role);
             }
             try {
-                role = await ndx.dezrez.get('role/{id}', null, req.params.id);
+                role = await ndx.dezrez.get('role/{id}', null, {id:req.params.id});
                 if (role) {
                     role._id = +req.params.id;
                     ndx.database.upsert('role', role);
@@ -75,7 +75,7 @@ module.exports = (ndx) => {
                 return res.json(property);
             }
             try {
-                property = await ndx.dezrez.get('property/{id}', null, req.params.id);
+                property = await ndx.dezrez.get('property/{id}', null, {id:req.params.id});
                 if (property) {
                     property._id = +req.params.id;
                     ndx.database.upsert('property', property);
@@ -109,7 +109,7 @@ module.exports = (ndx) => {
         return res.json(property);
     });
     ndx.app.get('/stats/rightmove/:id', async (req, res, next) => {
-        const rightmove = await ndx.dezrez.get('stats/rightmove/{id}', null, req.params.id);
+        const rightmove = await ndx.dezrez.get('stats/rightmove/{id}', null, {id:req.params.id});
         res.json(rightmove);
     });
     ndx.app.get('/people/findbyemail', async (req, res, next) => {
@@ -117,7 +117,7 @@ module.exports = (ndx) => {
         res.json(await ndx.dezrez.get('people/findbyemail', {emailAddress:email}));
     });
     ndx.app.get('/people/:id/:status', async (req, res, next) => {
-        res.json(await ndx.dezrez.get('people/{id}/' + req.params.status, null, req.params.id));
+        res.json(await ndx.dezrez.get('people/{id}/' + req.params.status, null, {id:req.params.id}));
     });
     ndx.app.get('/prop', async (req, res, next) => {
         const prop = await ndx.dezrez.fetchProperty();
