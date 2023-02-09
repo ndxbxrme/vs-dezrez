@@ -47,7 +47,8 @@ module.exports = (ndx) => {
           processed.added++;
         });
         removedRoleIds.forEach(async RoleId => {
-          ndx.database.delete('events', { _id: RoleId });
+          updateProperty(null, RoleId, null, 'property');
+          /*ndx.database.delete('events', { _id: RoleId });
           ndx.database.delete('viewingsbasic', { _id: RoleId });
           ndx.database.delete('offers', { _id: RoleId });
           const role = await ndx.database.selectOne('role', { _id: RoleId });
@@ -64,7 +65,7 @@ module.exports = (ndx) => {
                   ndx.database.delete('role', { _id: +role.agent_ref });
               }
               ndx.database.delete('role', { _id: +role._id });
-          }
+          }*/
           processed.removed++;
         });
       }
