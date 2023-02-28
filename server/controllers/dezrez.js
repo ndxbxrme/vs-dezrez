@@ -113,7 +113,7 @@ module.exports = (ndx) => {
         res.json(rightmove);
     });
     ndx.app.get('/people/findbyemail', async (req, res, next) => {
-        const email = req.query.email;
+        const email = req.params.email;
         res.json(await ndx.dezrez.get('people/findbyemail', {emailAddress:email}));
     });
     ndx.app.get('/people/:id/:status', async (req, res, next) => {
