@@ -90,7 +90,7 @@ module.exports = (ndx) => {
       if(!propertyRoleId) {
         if(eventId && eventName) {
           const res = await ndx.dezrez.get('event/' + eventId, null, "");
-          if(res && res.propertyId) {
+          if(res) {
             propertyId = res.Property ? res.Property.Id : res.PropertyId;
           }
         }
