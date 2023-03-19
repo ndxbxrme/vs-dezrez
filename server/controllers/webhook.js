@@ -90,16 +90,17 @@ module.exports = (ndx) => {
     try {
       if(!propertyRoleId) {
         if(eventId && eventName) {
-          const res = await ndx.dezrez.get('event/' + eventId, null, "");
+          const res = await ndx.dezrez.get('event/' + eventId, {});
           if(res) {
             const event = res.length ? res[0] : res;
             propertyId = event.Property ? event.Property.Id : event.PropertyId;
+            propertyRoleId = event.MarketingRoleId;
           }
         }
-        if(propertyId) {
+        /*if(propertyId) {
           const res = await ndx.dezrez.get('property/' + propertyId, null, "");
           propertyRoleId = res.RoleId;
-        }
+        }*/
       }
       processed.log += '\npropertyRoleId, ' + propertyRoleId;
       if(propertyRoleId) {
