@@ -102,7 +102,7 @@ module.exports = (ndx) => {
           propertyRoleId = res.RoleId;
         }*/
       }
-      processed.log += '\npropertyRoleId, ' + propertyRoleId;
+      //processed.log += '\npropertyRoleId, ' + propertyRoleId;
       if(propertyRoleId) {
         const eventType = getEventType(eventName);
         if(eventType==='event') return;
@@ -264,13 +264,13 @@ module.exports = (ndx) => {
       webhookCount++;
       //ndx.database.insert('postdata', req.body);
       const event = req.body;
-      processed.log += '\nupdateProperty, ' + event.PropertyId + ', ' + event.PropertyRoleId + ', ' + event.RootEntityId + ', ' + event.EventName;
+      //processed.log += '\nupdateProperty, ' + event.PropertyId + ', ' + event.PropertyRoleId + ', ' + event.RootEntityId + ', ' + event.EventName;
       updateProperty(event.PropertyId, event.PropertyRoleId, event.RootEntityId, event.EventName);
-      try {
+      /*try {
         superagent.post("http://92.237.208.72:4220/event").send(req.body).end();
       } catch(e) {
 
-      }
+      }*/
     }
     res.end('ok');
   });
