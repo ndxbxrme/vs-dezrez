@@ -92,7 +92,8 @@ module.exports = (ndx) => {
         if(eventId && eventName) {
           const res = await ndx.dezrez.get('event/' + eventId, null, "");
           if(res) {
-            propertyId = res.Property ? res.Property.Id : res.PropertyId;
+            const event = res.length ? res[0] : res;
+            propertyId = event.Property ? event.Property.Id : event.PropertyId;
           }
         }
         if(propertyId) {
