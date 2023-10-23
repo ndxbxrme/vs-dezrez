@@ -4,6 +4,16 @@
   
     superagent = require('superagent');
   
+    const sanitize = (parsedData) => {
+      const sanitizedData = JSON.stringify(parsedData, (key, value) => {
+        if (typeof value === 'string') {
+          return value.replace(/[\x00-\x1F\x7F]/g, '');
+        }
+        return value;
+      });
+      return JSON.parse(sanitizedData);
+    }
+
     module.exports = function(ndx) {
       var accessToken, envUrls, get, post, refreshToken, tokenExpires, urls;
       if (process.env.REZI_ID && process.env.REZI_SECRET) {
@@ -59,7 +69,7 @@
                   if (err) {
                     return reject(err);
                   } else {
-                    return resolve(response.body);
+                    return resolve(sanitize(response.body));
                   }
                 });
               } else {
