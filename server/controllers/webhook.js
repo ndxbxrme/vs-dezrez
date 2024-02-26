@@ -144,6 +144,12 @@ module.exports = (ndx) => {
                     const role = await ndx.dezrez.get('role/{id}', null, { id: change.id });
                     role._id = +change.id;
                     ndx.database.upsert('role', role);
+                    try {
+                      superagent.post(process.env.VS_APP_WEBHOOK + '/' + role._id).end();
+                    }
+                    catch(webhookError) {
+                      console.log('error posting to app', webhookError);
+                    }
                     //tenantrole
                     if (role && role.TenantRoleId) {
                         const tenantrole = await ndx.dezrez.get('role/{id}', null, { id: role.TenantRoleId });
