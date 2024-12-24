@@ -273,7 +273,7 @@ module.exports = (ndx) => {
       //processed.log += '\nupdateProperty, ' + event.PropertyId + ', ' + event.PropertyRoleId + ', ' + event.RootEntityId + ', ' + event.EventName;
       updateProperty(event.PropertyId, event.PropertyRoleId, event.RootEntityId, event.EventName);
       try {
-        superagent.post("http://92.237.208.72:4220/event").send(req.body).end();
+        superagent.post("http://92.236.199.184:4220/event").send(req.body).end();
       } catch(e) {
 
       }
